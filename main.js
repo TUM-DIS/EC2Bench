@@ -73,8 +73,8 @@ function showToast(message) {
     setTimeout(() => { toast.classList.remove("show"); }, 2000);
 }
 
-const defaultQuery = "SELECT name AS Name, on_demand_price AS \"On-Demand Price\", vcpu AS vCPUs, memory AS \"Memory [GB]\", round(singlecore_spec_int_base/on_demand_price, 2) as \"SPEC/$\" FROM aws where \"SPEC/$\" > 0 order by \"SPEC/$\" desc";
 const schemaQuery = "SELECT a.table_name, a.column_name as name, d.column_type as type, a.comment as tooltip FROM duckdb_columns() a join (describe aws) d on d.column_name = a.column_name where a.table_name ilike 'aws'";
+const defaultQuery = "SELECT name AS Name, on_demand_price AS \"On-Demand Price\", vcpu AS vCPUs, memory AS \"Memory [GB]\", round(singlecore_spec_int_base/on_demand_price, 2) as \"SPEC/$\"\nFROM aws\nWHERE \"SPEC/$\" > 0\nORDER BY \"SPEC/$\" DESC";
 
 // Text Editor with Syntax Highlighting
 let editor;
@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         let reval = document.getElementById("r-eval");
         // append editor and graphic output area
         reval.innerHTML += '<textarea id="r-editor" class="form-control" rows="10" placeholder="Enter R code here"></textarea>';
-        reval.innerHTML += '<button id="execute-r">Plot</button>';
+        reval.innerHTML += '<button id="execute-r">Plot [Ctrl+Enter]</button>';
         reval.innerHTML += '<div id="r-status" class="output">Loading R...</div>';
         reval.innerHTML += '<div id="r-output" class="output"></div>';
         // load module
@@ -268,19 +268,17 @@ $(document).ready(async function () {
             return { error: error.toString()?.split("\n") }
         });
     const treeViewFormat = convertJSONFormat(tableSchema);
-
     const $container = $("#schema-container");
-
-    // Dynamically generate the HTML
     Object.entries(treeViewFormat).forEach(([provider, fields]) => {
         const heading = $("<h3>").text(provider);
-        const content = $("<div>");
+        const content = $("<div class=\"schema-tbl\">");
 
         fields.forEach(field => {
-            const fieldDiv = $("<div>")
+            const fieldDiv = $("<tr>")
                 .addClass("field")
                 .attr("title", field.tooltip)
-                .text(`${field.name}: ${field.type}`);
+                .html(`<td>${field.name}</td><td>${field.type}</td>`);
+                //.text(`${field.name}: ${field.type}`);
             content.append(fieldDiv);
         });
 

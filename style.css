@@ -1122,6 +1122,8 @@ html.dark .dt-container .dt-paging .dt-paging-button:active {
 .editor-wrapper {
   display: flex;
   flex-direction: row;
+  align-items: stretch; /* Ensures children match in height */
+  height: auto;
 }
 
 .editor-wrapper > textarea {
@@ -1129,11 +1131,10 @@ html.dark .dt-container .dt-paging .dt-paging-button:active {
 }
 
 .treeview {
-  min-height: 100%;
   border: 1px solid #ccc;
   overflow-y: scroll;
   width: 30%;
-  padding: 1em;
+  padding: 0.5em;
 }
 
 .field {
