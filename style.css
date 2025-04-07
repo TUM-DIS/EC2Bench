@@ -1116,3 +1116,22 @@ html.dark .dt-container .dt-paging .dt-paging-button:active {
   text-decoration: none;
   color: #000;
 }
+
+/**  tree view styles */
+
+.editor-wrapper {
+  display: flex;
+  flex-direction: row;
+}
+
+.editor-wrapper > textarea {
+  width: 70%;
+}
+
+.treeview {
+  background-color: lightgrey;
+  min-height: 100%;
+  overflow-y: scroll;
+  width: 30%;
+  padding: 1em;
+}

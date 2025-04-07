@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         let reval = document.getElementById("r-eval");
         // append editor and graphic output area
         reval.innerHTML += '<textarea id="r-editor" class="form-control" rows="10" placeholder="Enter R code here"></textarea>';
-        reval.innerHTML += '<button id="execute-r">Run</button>';
+        reval.innerHTML += '<button id="execute-r">Plot</button>';
         reval.innerHTML += '<div id="r-status" class="output">Loading R...</div>';
         reval.innerHTML += '<div id="r-output" class="output"></div>';
         // load module
