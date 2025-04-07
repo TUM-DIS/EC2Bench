@@ -293,8 +293,6 @@ $(document).ready(async function () {
         heightStyle: "content"
     });
 
-    $(document).tooltip();
-
     $("#load-table").on("click", async function (e) {
         e.preventDefault();
         $("#error-msg").text("");
@@ -310,3 +308,5 @@ $(document).ready(async function () {
         }
     });
 });
+
+$(document).tooltip();
