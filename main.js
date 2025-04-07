@@ -13,6 +13,28 @@ import 'datatables.net-responsive-dt';
 import dbfile from './static/benchmark.duckdb?url';
 
 
+function convertJSONFormat(original_format) {
+    const result = {};
+
+    original_format.rows.forEach(row => {
+        const { table_name, ...rest } = row;
+    
+        // Replace nulls with empty strings
+        const cleaned = {};
+        for (const key in rest) {
+          cleaned[key] = rest[key] === null ? "" : rest[key];
+        }
+    
+        if (!result[table_name]) {
+          result[table_name] = [];
+        }
+    
+        result[table_name].push(cleaned);
+      });
+
+      return result;
+}
+
 // Helpers for encoding query in URL
 function base64Encode(str) {
     return btoa(encodeURIComponent(str)); // Encode to Base64
@@ -52,6 +74,7 @@ function showToast(message) {
 }
 
 const defaultQuery = "SELECT name AS Name, on_demand_price AS \"On-Demand Price\", vcpu AS vCPUs, memory AS \"Memory [GB]\", round(singlecore_spec_int_base/on_demand_price, 2) as \"SPEC/$\" FROM aws where \"SPEC/$\" > 0 order by \"SPEC/$\" desc";
+const schemaQuery = "SELECT a.table_name, a.column_name as name, d.column_type as type, a.comment as tooltip FROM duckdb_columns() a join (describe aws) d on d.column_name = a.column_name where a.table_name ilike 'aws'";
 
 // Text Editor with Syntax Highlighting
 let editor;
@@ -231,6 +254,47 @@ const recreateTable = async () => {
 }
 
 $(document).ready(async function () {
+    // render treview with database schema
+    const tableSchema = await conn.query(schemaQuery).then(response => {
+        return {
+            columns: response.schema.fields.map(field => field.name),
+            rows: // Bug fix explained at: https://github.com/GoogleChromeLabs/jsbi/issues/30
+                JSON.parse(JSON.stringify(response.toArray(), (key, value) =>
+                    typeof value === 'bigint' ? value.toString() : value // return everything else unchanged
+                ))
+        }
+    },
+        error => {
+            return { error: error.toString()?.split("\n") }
+        });
+    const treeViewFormat = convertJSONFormat(tableSchema);
+
+    const $container = $("#schema-container");
+
+    // Dynamically generate the HTML
+    Object.entries(treeViewFormat).forEach(([provider, fields]) => {
+        const heading = $("<h3>").text(provider);
+        const content = $("<div>");
+
+        fields.forEach(field => {
+            const fieldDiv = $("<div>")
+                .addClass("field")
+                .attr("title", field.tooltip)
+                .text(`${field.name}: ${field.type}`);
+            content.append(fieldDiv);
+        });
+
+        $container.append(heading).append(content);
+    });
+
+    // Initialize accordion and tooltips
+    $container.accordion({
+        collapsible: true,
+        heightStyle: "content"
+    });
+
+    $(document).tooltip();
+
     $("#load-table").on("click", async function (e) {
         e.preventDefault();
         $("#error-msg").text("");

@@ -1129,9 +1129,27 @@ html.dark .dt-container .dt-paging .dt-paging-button:active {
 }
 
 .treeview {
-  background-color: lightgrey;
   min-height: 100%;
+  border: 1px solid #ccc;
   overflow-y: scroll;
   width: 30%;
   padding: 1em;
+}
+
+.field {
+  margin-left: 10px;
+  margin-bottom: 5px;
+}
+
+.ui-accordion-content {
+  max-height: 100px; /* Scroll height for each section */
+  overflow-y: auto;
+}
+
+.table-schema h3 {
+  background-color: #d9ebf9;
+  padding: 6px 10px;
+  margin: 0;
+  font-weight: bold;
+  border-radius: 3px;
 }
